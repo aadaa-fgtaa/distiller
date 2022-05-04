@@ -1,0 +1,349 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.34.4.
+--
+-- see: https://github.com/sol/hpack
+
+name:           distiller
+version:        0.0.0.0
+description:    Please see the README on Github at <https://github.com/aadaa-fgtaa/distiller#readme>
+homepage:       https://github.com/aadaa-fgtaa/distiller#readme
+bug-reports:    https://github.com/aadaa-fgtaa/distiller/issues
+author:         aadaa_fgtaa
+maintainer:     aadaa_fgtaa@pm.me
+copyright:      2022 aadaa_fgtaa
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    LICENSE
+
+source-repository head
+  type: git
+  location: https://github.com/aadaa-fgtaa/distiller
+
+library
+  exposed-modules:
+      Distiller.Name
+      Distiller.Prelude
+      Distiller.Residualise
+      Distiller.Solver
+      Distiller.Term
+      Distiller.Term.Eval
+      Distiller.Term.Parse
+      Distiller.Term.Print
+      Distiller.Transform
+      Distiller.Tree
+  other-modules:
+      Paths_distiller
+  hs-source-dirs:
+      src
+  default-extensions:
+      BangPatterns
+      BinaryLiterals
+      BlockArguments
+      CApiFFI
+      ConstrainedClassMethods
+      ConstraintKinds
+      DataKinds
+      DefaultSignatures
+      DeriveAnyClass
+      DeriveDataTypeable
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      DerivingVia
+      DisambiguateRecordFields
+      DuplicateRecordFields
+      EmptyCase
+      EmptyDataDecls
+      EmptyDataDeriving
+      ExistentialQuantification
+      ExplicitForAll
+      ExplicitNamespaces
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      GADTSyntax
+      GADTs
+      GeneralizedNewtypeDeriving
+      HexFloatLiterals
+      ImplicitParams
+      ImportQualifiedPost
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      LexicalNegation
+      LiberalTypeSynonyms
+      LinearTypes
+      MonadComprehensions
+      MultiParamTypeClasses
+      MultiWayIf
+      NamedFieldPuns
+      NamedWildCards
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      NumDecimals
+      NumericUnderscores
+      OverloadedLabels
+      OverloadedLists
+      OverloadedStrings
+      PackageImports
+      ParallelListComp
+      PartialTypeSignatures
+      PatternSynonyms
+      PolyKinds
+      PostfixOperators
+      QualifiedDo
+      QuantifiedConstraints
+      RankNTypes
+      RecordWildCards
+      RecursiveDo
+      RoleAnnotations
+      ScopedTypeVariables
+      StandaloneDeriving
+      StandaloneKindSignatures
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      TypeFamilyDependencies
+      TypeOperators
+      TypeSynonymInstances
+      UnliftedNewtypes
+      ViewPatterns
+  ghc-options: -O2 -fexpose-all-unfoldings -fspecialise-aggressively -flate-specialise -Wall -Widentities -Wpartial-fields -Wunused-packages -Wunused-type-patterns -Wredundant-constraints -Wincomplete-uni-patterns -Wmonomorphism-restriction -Wincomplete-record-updates -Wmissing-exported-signatures -Wmissing-deriving-strategies -Werror=tabs -Werror=missing-fields -Werror=missing-methods -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Werror=incomplete-record-updates
+  build-depends:
+      base
+    , containers
+    , exceptions
+    , extra
+    , generic-data
+    , indexed-traversable
+    , indexed-traversable-instances
+    , megaparsec
+    , mtl
+    , pipes
+    , prettyprinter
+    , relude
+    , repline
+    , semialign
+    , these
+    , with-utf8
+    , witherable
+    , writer-cps-mtl
+  default-language: Haskell2010
+
+executable distiller
+  main-is: Main.hs
+  other-modules:
+      Paths_distiller
+  hs-source-dirs:
+      app
+  default-extensions:
+      BangPatterns
+      BinaryLiterals
+      BlockArguments
+      CApiFFI
+      ConstrainedClassMethods
+      ConstraintKinds
+      DataKinds
+      DefaultSignatures
+      DeriveAnyClass
+      DeriveDataTypeable
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      DerivingVia
+      DisambiguateRecordFields
+      DuplicateRecordFields
+      EmptyCase
+      EmptyDataDecls
+      EmptyDataDeriving
+      ExistentialQuantification
+      ExplicitForAll
+      ExplicitNamespaces
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      GADTSyntax
+      GADTs
+      GeneralizedNewtypeDeriving
+      HexFloatLiterals
+      ImplicitParams
+      ImportQualifiedPost
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      LexicalNegation
+      LiberalTypeSynonyms
+      LinearTypes
+      MonadComprehensions
+      MultiParamTypeClasses
+      MultiWayIf
+      NamedFieldPuns
+      NamedWildCards
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      NumDecimals
+      NumericUnderscores
+      OverloadedLabels
+      OverloadedLists
+      OverloadedStrings
+      PackageImports
+      ParallelListComp
+      PartialTypeSignatures
+      PatternSynonyms
+      PolyKinds
+      PostfixOperators
+      QualifiedDo
+      QuantifiedConstraints
+      RankNTypes
+      RecordWildCards
+      RecursiveDo
+      RoleAnnotations
+      ScopedTypeVariables
+      StandaloneDeriving
+      StandaloneKindSignatures
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      TypeFamilyDependencies
+      TypeOperators
+      TypeSynonymInstances
+      UnliftedNewtypes
+      ViewPatterns
+  ghc-options: -O2 -fexpose-all-unfoldings -fspecialise-aggressively -flate-specialise -Wall -Widentities -Wpartial-fields -Wunused-packages -Wunused-type-patterns -Wredundant-constraints -Wincomplete-uni-patterns -Wmonomorphism-restriction -Wincomplete-record-updates -Wmissing-exported-signatures -Wmissing-deriving-strategies -Werror=tabs -Werror=missing-fields -Werror=missing-methods -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Werror=incomplete-record-updates -rtsopts -threaded -with-rtsopts= "-A32M -N"
+  build-depends:
+      base
+    , containers
+    , distiller
+    , exceptions
+    , extra
+    , generic-data
+    , indexed-traversable
+    , indexed-traversable-instances
+    , megaparsec
+    , mtl
+    , pipes
+    , prettyprinter
+    , relude
+    , repline
+    , semialign
+    , these
+    , with-utf8
+    , witherable
+    , writer-cps-mtl
+  default-language: Haskell2010
+
+test-suite distiller-test
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_distiller
+  hs-source-dirs:
+      test
+  default-extensions:
+      BangPatterns
+      BinaryLiterals
+      BlockArguments
+      CApiFFI
+      ConstrainedClassMethods
+      ConstraintKinds
+      DataKinds
+      DefaultSignatures
+      DeriveAnyClass
+      DeriveDataTypeable
+      DeriveFoldable
+      DeriveFunctor
+      DeriveGeneric
+      DeriveLift
+      DeriveTraversable
+      DerivingStrategies
+      DerivingVia
+      DisambiguateRecordFields
+      DuplicateRecordFields
+      EmptyCase
+      EmptyDataDecls
+      EmptyDataDeriving
+      ExistentialQuantification
+      ExplicitForAll
+      ExplicitNamespaces
+      FlexibleContexts
+      FlexibleInstances
+      FunctionalDependencies
+      GADTSyntax
+      GADTs
+      GeneralizedNewtypeDeriving
+      HexFloatLiterals
+      ImplicitParams
+      ImportQualifiedPost
+      InstanceSigs
+      KindSignatures
+      LambdaCase
+      LexicalNegation
+      LiberalTypeSynonyms
+      LinearTypes
+      MonadComprehensions
+      MultiParamTypeClasses
+      MultiWayIf
+      NamedFieldPuns
+      NamedWildCards
+      NoImplicitPrelude
+      NoMonomorphismRestriction
+      NumDecimals
+      NumericUnderscores
+      OverloadedLabels
+      OverloadedLists
+      OverloadedStrings
+      PackageImports
+      ParallelListComp
+      PartialTypeSignatures
+      PatternSynonyms
+      PolyKinds
+      PostfixOperators
+      QualifiedDo
+      QuantifiedConstraints
+      RankNTypes
+      RecordWildCards
+      RecursiveDo
+      RoleAnnotations
+      ScopedTypeVariables
+      StandaloneDeriving
+      StandaloneKindSignatures
+      TupleSections
+      TypeApplications
+      TypeFamilies
+      TypeFamilyDependencies
+      TypeOperators
+      TypeSynonymInstances
+      UnliftedNewtypes
+      ViewPatterns
+  ghc-options: -O2 -fexpose-all-unfoldings -fspecialise-aggressively -flate-specialise -Wall -Widentities -Wpartial-fields -Wunused-packages -Wunused-type-patterns -Wredundant-constraints -Wincomplete-uni-patterns -Wmonomorphism-restriction -Wincomplete-record-updates -Wmissing-exported-signatures -Wmissing-deriving-strategies -Werror=tabs -Werror=missing-fields -Werror=missing-methods -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Werror=incomplete-record-updates -rtsopts -threaded
+  build-depends:
+      base
+    , containers
+    , distiller
+    , exceptions
+    , extra
+    , generic-data
+    , indexed-traversable
+    , indexed-traversable-instances
+    , megaparsec
+    , mtl
+    , pipes
+    , prettyprinter
+    , relude
+    , repline
+    , semialign
+    , these
+    , with-utf8
+    , witherable
+    , writer-cps-mtl
+  default-language: Haskell2010

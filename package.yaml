@@ -1,0 +1,159 @@
+name:                distiller
+version:             0.0.0.0
+author:              aadaa_fgtaa
+github:              aadaa-fgtaa/distiller
+license:             BSD3
+copyright:           2022 aadaa_fgtaa
+maintainer:          aadaa_fgtaa@pm.me
+
+extra-source-files:
+- README.md
+- LICENSE
+
+description:         Please see the README on Github at <https://github.com/aadaa-fgtaa/distiller#readme>
+
+dependencies:
+- pipes
+- these
+- semialign
+- witherable
+- mtl
+- base
+- extra
+- relude
+- containers
+- writer-cps-mtl
+- indexed-traversable
+- indexed-traversable-instances
+- megaparsec
+- prettyprinter
+- generic-data
+- repline
+- exceptions
+- with-utf8
+
+ghc-options:
+- -O2
+- -fexpose-all-unfoldings
+- -fspecialise-aggressively
+- -flate-specialise
+- -Wall
+- -Widentities
+- -Wpartial-fields
+- -Wunused-packages
+- -Wunused-type-patterns
+- -Wredundant-constraints
+- -Wincomplete-uni-patterns
+- -Wmonomorphism-restriction
+- -Wincomplete-record-updates
+- -Wmissing-exported-signatures
+- -Wmissing-deriving-strategies
+- -Werror=tabs
+- -Werror=missing-fields
+- -Werror=missing-methods
+- -Werror=incomplete-patterns
+- -Werror=incomplete-uni-patterns
+- -Werror=incomplete-record-updates
+
+library:
+  source-dirs: src
+
+executables:
+  distiller:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -with-rtsopts= "-A32M -N"
+    - -Wno-unused-packages
+    dependencies:
+    - distiller
+
+tests:
+  distiller-test:
+    main:                Main.hs
+    source-dirs:         test
+    ghc-options:
+    - -rtsopts
+    - -threaded
+    - -Wno-unused-packages
+    dependencies:
+    - distiller
+
+default-extensions:
+- BangPatterns
+- BinaryLiterals
+- BlockArguments
+- CApiFFI
+- ConstrainedClassMethods
+- ConstraintKinds
+- DataKinds
+- DefaultSignatures
+- DeriveAnyClass
+- DeriveDataTypeable
+- DeriveFoldable
+- DeriveFunctor
+- DeriveGeneric
+- DeriveLift
+- DeriveTraversable
+- DerivingStrategies
+- DerivingVia
+- DisambiguateRecordFields
+- DuplicateRecordFields
+- EmptyCase
+- EmptyDataDecls
+- EmptyDataDeriving
+- ExistentialQuantification
+- ExplicitForAll
+- ExplicitNamespaces
+- FlexibleContexts
+- FlexibleInstances
+- FunctionalDependencies
+- GADTSyntax
+- GADTs
+- GeneralizedNewtypeDeriving
+- HexFloatLiterals
+- ImplicitParams
+- ImportQualifiedPost
+- InstanceSigs
+- KindSignatures
+- LambdaCase
+- LexicalNegation
+- LiberalTypeSynonyms
+- LinearTypes
+- MonadComprehensions
+- MultiParamTypeClasses
+- MultiWayIf
+- NamedFieldPuns
+- NamedWildCards
+- NoImplicitPrelude
+- NoMonomorphismRestriction
+- NumDecimals
+- NumericUnderscores
+- OverloadedLabels
+- OverloadedLists
+- OverloadedStrings
+- PackageImports
+- ParallelListComp
+- PartialTypeSignatures
+- PatternSynonyms
+- PolyKinds
+- PostfixOperators
+- QualifiedDo
+- QuantifiedConstraints
+- RankNTypes
+- RecordWildCards
+- RecursiveDo
+- RoleAnnotations
+- ScopedTypeVariables
+- StandaloneDeriving
+- StandaloneKindSignatures
+- TupleSections
+- TypeApplications
+- TypeFamilies
+- TypeFamilyDependencies
+- TypeOperators
+- TypeSynonymInstances
+- UnliftedNewtypes
+- ViewPatterns
