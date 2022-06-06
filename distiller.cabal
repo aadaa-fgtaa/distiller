@@ -219,7 +219,7 @@ executable distiller
       TypeSynonymInstances
       UnliftedNewtypes
       ViewPatterns
-  ghc-options: -O2 -fexpose-all-unfoldings -fspecialise-aggressively -flate-specialise -Wall -Widentities -Wpartial-fields -Wunused-packages -Wunused-type-patterns -Wredundant-constraints -Wincomplete-uni-patterns -Wmonomorphism-restriction -Wincomplete-record-updates -Wmissing-exported-signatures -Wmissing-deriving-strategies -Werror=tabs -Werror=missing-fields -Werror=missing-methods -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Werror=incomplete-record-updates -rtsopts -threaded -with-rtsopts= "-A32M -N"
+  ghc-options: -O2 -fexpose-all-unfoldings -fspecialise-aggressively -flate-specialise -Wall -Widentities -Wpartial-fields -Wunused-packages -Wunused-type-patterns -Wredundant-constraints -Wincomplete-uni-patterns -Wmonomorphism-restriction -Wincomplete-record-updates -Wmissing-exported-signatures -Wmissing-deriving-strategies -Werror=tabs -Werror=missing-fields -Werror=missing-methods -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Werror=incomplete-record-updates -rtsopts -threaded -with-rtsopts= "-A32M -N" -Wno-unused-packages
   build-depends:
       base
     , containers
@@ -325,7 +325,7 @@ test-suite distiller-test
       TypeSynonymInstances
       UnliftedNewtypes
       ViewPatterns
-  ghc-options: -O2 -fexpose-all-unfoldings -fspecialise-aggressively -flate-specialise -Wall -Widentities -Wpartial-fields -Wunused-packages -Wunused-type-patterns -Wredundant-constraints -Wincomplete-uni-patterns -Wmonomorphism-restriction -Wincomplete-record-updates -Wmissing-exported-signatures -Wmissing-deriving-strategies -Werror=tabs -Werror=missing-fields -Werror=missing-methods -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Werror=incomplete-record-updates -rtsopts -threaded
+  ghc-options: -O2 -fexpose-all-unfoldings -fspecialise-aggressively -flate-specialise -Wall -Widentities -Wpartial-fields -Wunused-packages -Wunused-type-patterns -Wredundant-constraints -Wincomplete-uni-patterns -Wmonomorphism-restriction -Wincomplete-record-updates -Wmissing-exported-signatures -Wmissing-deriving-strategies -Werror=tabs -Werror=missing-fields -Werror=missing-methods -Werror=incomplete-patterns -Werror=incomplete-uni-patterns -Werror=incomplete-record-updates -rtsopts -threaded -Wno-unused-packages
   build-depends:
       base
     , containers

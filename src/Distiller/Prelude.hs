@@ -46,3 +46,9 @@ sameZipWithM_ f xs ys = sequence_ $ alignWith (these (const empty) (const empty)
 
 sameZipWithM :: (MonadPlus m, Traversable t, Semialign t) => (a -> b -> m c) -> t a -> t b -> m (t c)
 sameZipWithM f xs ys = sequence $ alignWith (these (const empty) (const empty) f) xs ys
+
+withReturn :: Monad m => ((r -> ContT r m ()) -> ContT r m r) -> m r
+withReturn f = runContT (callCC f) pure
+
+withTryReturnM :: Monad m => ((m (Maybe r) -> ContT r m ()) -> ContT r m r) -> m r
+withTryReturnM f = withReturn \ret -> f $ maybe pass ret <=< lift

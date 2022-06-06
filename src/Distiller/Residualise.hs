@@ -18,18 +18,22 @@ residualise = fmap (uncurry Term.Prog) . runWriterT . evaluatingStateT [] . go
         where
           header = Term.Header fun args
 
-      Tree.Def fun args body -> get >>= \rho -> case firstJust (\(orig, _, useHeader) -> (, useHeader) <$> Tree.renaming orig tree) rho of
+      Tree.Def fun args body -> get >>= \rho -> case firstJust (\(_, defHeader, useHeader) -> (, useHeader) <$> Term.renaming defHeader header) rho of
         Just (sub, useHeader) -> Term.rename sub useHeader
-        Nothing -> do
-          fun' <- clone fun
-          let
-            args' = Tree.freeVars body
-            defHeader = Term.Header fun  args
-            useHeader = Term.Header fun' args'
-          modify' ((tree, defHeader, useHeader):)
-          body' <- go body
-          tell [(fun', Term.Lams args' body')]
-          pure useHeader
+        Nothing -> case firstJust (\(orig, _, useHeader) -> (, useHeader) <$> Tree.renaming orig tree) rho of
+          Just (sub, useHeader) -> Term.rename sub useHeader
+          Nothing -> do
+            fun' <- clone fun
+            let
+              args' = Tree.freeVars body
+              defHeader = Term.Header fun  args
+              useHeader = Term.Header fun' args'
+            modify' ((tree, defHeader, useHeader):)
+            body' <- go body
+            tell [(fun', Term.Lams args' body')]
+            pure useHeader
+        where
+          header = Term.Header fun args
 
       Tree.Var var -> do
         pure $ Term.Var var

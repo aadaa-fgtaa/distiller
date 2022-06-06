@@ -7,19 +7,23 @@ import Distiller.Prelude
 import Distiller.Residualise
 import Data.Set ( member, insert )
 import Data.Foldable.Extra ( firstJustM )
+import qualified Data.IntMap.Strict as IntMap
 
 -- TODO Proper error handling
+-- TODO Caching implemented here is broken - it can cause out-of-scope fold nodes. Just for quick experiments
+
+type Cache = IntMap ([(Term, Tree)], [(Tree, Tree)])
+type CacheT = StateT Cache
 
 transformProg :: MonadFresh m => Int -> Prog -> m Prog
-transformProg n (Prog main defs) = residualise =<< usingReaderT defs do transform n [] main
+transformProg n (Prog main defs) = residualise =<< usingReaderT defs do evaluatingStateT [] do transform n [] main
 
 distillProg :: MonadFresh m => Prog -> m Prog
-distillProg (Prog main defs) = residualise =<< usingReaderT defs do distill 0 main
+distillProg (Prog main defs) = residualise =<< usingReaderT defs do evaluatingStateT [] do distill 0 main
 
 
-transform :: MonadFresh m => Int -> [Context] -> Term -> ReaderT Defs m Tree
-
-transform n ctx0 term0 | n <= 0 = go [] (place ctx0 term0)
+transform :: MonadFresh m => Int -> [Context] -> Term -> CacheT (ReaderT Defs m) Tree
+transform lvl ctx term | lvl <= 0 = go [] (place ctx term)
   where
     go rho = \case
       Term.Var var -> do
@@ -40,17 +44,17 @@ transform n ctx0 term0 | n <= 0 = go [] (place ctx0 term0)
       Term.Lam par body -> do
         Tree.Lam par <$> go rho body
 
-      Term.Let var term body -> do
-        Tree.Let var <$> go rho term <*> go rho body
+      Term.Let var def body -> do
+        Tree.Let var <$> go rho def <*> go rho body
 
       Term.Case scrut alts -> do
         Tree.Case <$> go rho scrut <*> for alts \(Term.Alt pars body) -> Tree.Alt pars <$> go rho body
 
-transform n ctx0 term0 = go [] ctx0 term0
+transform lvl ctx0 term0 = go [] ctx0 term0
 
   where
 
-    go rho ctx = \case
+    go rho ctx term = case term of
 
       Term.Var var -> do
         go' rho ctx (Tree.Var var)
@@ -69,21 +73,25 @@ transform n ctx0 term0 = go [] ctx0 term0
 
       Term.Case scrut alts -> go rho (Match alts:ctx) scrut
 
-      Term.Let var term body -> Tree.Let var <$> go rho [] term <*> go rho ctx body
+      Term.Let var def body -> Tree.Let var <$> go rho [] def <*> go rho ctx body
 
-      Term.Fun fun -> do
-        tree <- transform (n - 1) ctx $ Term.Fun fun
-        findRenaming tree rho >>= \case
-          Just tr -> pure tr
-          Nothing -> findGeneralisation tree rho >>= \case
-            Just (Prog term env') -> withEnv env' do go rho [] term
-            Nothing -> do
-              fun' <- fresh "fun"
-              Prog term env' <- residualise tree
-              let args = Tree.freeVars tree
-              let term' = unfold env' term
-              body <- withEnv env' do go ((Tree.Use fun' args, tree):rho) [] term'
-              pure $ mkDef fun' args body
+      Term.Fun _fun -> withTryReturnM \tryReturnM -> do
+        tryReturnM $ findPreCached lvl ctx term
+
+        tree <- lift $ transform (lvl - 1) ctx term
+
+        tryReturnM $ findPostCached lvl tree
+        tryReturnM $ findRenaming tree rho
+        tryReturnM $ findGeneralisation tree rho $ go rho []
+
+        fun' <- fresh "fun"
+        Prog term' env' <- residualise tree
+        let args = Tree.freeVars tree
+        let term'' = unfold env' term'
+        body <- lift $ withEnv env' do go ((Tree.Use fun' args, tree):rho) [] term''
+        let res = mkDef fun' args body
+        cache lvl ctx term tree res
+        pure res
 
     go' rho ctx tree = case ctx of
 
@@ -98,12 +106,12 @@ transform n ctx0 term0 = go [] ctx0 term0
         pure $ Tree.Case tree alts'
 
 
-distill :: MonadFresh m => Int -> Term -> ReaderT Defs m Tree
-distill n = go [] []
+distill :: MonadFresh m => Int -> Term -> CacheT (ReaderT Defs m) Tree
+distill lvl = go [] []
 
   where
 
-    go rho ctx = \case
+    go rho ctx term = case term of
 
       Term.Var var -> go' rho ctx (Tree.Var var)
 
@@ -121,21 +129,26 @@ distill n = go [] []
 
       Term.Case scrut alts -> go rho (Match alts:ctx) scrut
 
-      Term.Let var term body -> Tree.Let var <$> go rho [] term <*> go rho ctx body
+      Term.Let var def body -> Tree.Let var <$> go rho [] def <*> go rho ctx body
 
-      Term.Fun fun -> do
-        tree <- transform n ctx $ Term.Fun fun
-        findRenaming tree rho >>= \case
-          Just tr -> pure tr
-          Nothing -> findGeneralisation tree rho >>= \case
-            Just (Prog term env') -> withEnv env' do distill (n + 1) term
-            Nothing -> do
-              fun' <- fresh "fun"
-              let args = Tree.freeVars tree
-              Prog term env' <- residualise tree
-              let term' = unfold env' term
-              body <- withEnv env' $ go ((Tree.Use fun' args, tree):rho) [] term'
-              pure $ mkDef fun' args body
+      Term.Fun _fun -> withTryReturnM \tryReturnM -> do
+        tryReturnM $ findPreCached (-lvl) ctx term
+
+        tree <- lift $ transform lvl ctx term
+
+        tryReturnM $ findPostCached (-lvl) tree
+        tryReturnM $ findRenaming tree rho
+        tryReturnM $ findGeneralisation tree rho $ distill (lvl + 1)
+
+        fun' <- fresh "fun"
+        let args = Tree.freeVars tree
+        Prog term' env' <- residualise tree
+        let term'' = unfold env' term'
+        body <- lift $ withEnv env' $ go ((Tree.Use fun' args, tree):rho) [] term''
+        let res = mkDef fun' args body
+        cache (-lvl) ctx term tree res
+        pure res
+
 
     go' rho ctx tree = case ctx of
 
@@ -149,12 +162,11 @@ distill n = go [] []
         alts' <- for alts \(Term.Alt pars body) -> Tree.Alt pars <$> go rho ctx' body
         pure $ Tree.Case tree alts'
 
-
 findRenaming :: MonadFresh m => Tree -> [(Tree, Tree)] -> m (Maybe Tree)
 findRenaming cur = firstJustM \(fun, old) -> traverse (`Tree.rename` fun) $ Tree.renaming old cur
 
-findGeneralisation :: MonadFresh m => Tree -> [(Tree, Tree)] -> m (Maybe Prog)
-findGeneralisation cur = firstJustM \(_, old) -> traverse residualise =<< Tree.generalisation old cur
+findGeneralisation :: (MonadFresh m, MonadReader Defs m) => Tree -> [(Tree, Tree)] -> (Term -> m b) -> m (Maybe b)
+findGeneralisation cur rho go = firstJustM (\(_, old) -> traverse residualise =<< Tree.generalisation old cur) rho >>= traverse \(Prog term env') -> withEnv env' do go term
 
 unfold :: Defs -> Term -> Term
 unfold env = go []
@@ -197,3 +209,17 @@ reduceCase con args alts = subst (associate pars args) body
 
 reduceLam :: MonadFresh m => Var -> Term -> Term -> m Term
 reduceLam = subst1
+
+
+findPreCached :: (MonadState Cache m, MonadFresh m) => Int -> [Context] -> Term -> m (Maybe Tree)
+findPreCached n ctx tm = gets (fst . IntMap.findWithDefault mempty n) >>= firstJustM \(term, tree) -> traverse (`Tree.rename` tree) $ Term.renaming term cur
+  where
+    cur = place ctx tm
+
+findPostCached :: (MonadState Cache m, MonadFresh m) => Int -> Tree -> m (Maybe Tree)
+findPostCached n tr = gets (snd . IntMap.findWithDefault mempty n) >>= firstJustM \(term, tree) -> traverse (`Tree.rename` tree) $ Tree.renaming term tr
+
+cache :: MonadState Cache m => Int -> [Context] -> Term -> Tree -> Tree -> m ()
+cache lvl ctx term tree res = modify' $ upsert lvl $ bimap ((place ctx term, res):) ((tree, res):)
+  where
+    upsert key f = IntMap.alter (Just . f . fold) key
